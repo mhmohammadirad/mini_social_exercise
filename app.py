@@ -505,6 +505,30 @@ def add_comment(post_id):
     # Redirect back to the page the user came from (likely the post detail page)
     return redirect(request.referrer or url_for('post_detail', post_id=post_id))
 
+
+@app.route('/posts/<int:post_id>/report', methods=['POST'])
+def report(post_id):
+    """Handles adding a new report to a specific post."""
+    user_id = session.get('user_id')
+
+    # Block access if user is not logged in
+    if not user_id:
+        flash('You must be logged in to report.', 'danger')
+        return redirect(url_for('login'))
+
+    # Get content from the submitted form
+    content = request.form.get('content')
+
+    db = get_db()
+    db.execute('INSERT INTO reports (post_id, user_id) VALUES (?, ?)',
+                (post_id, user_id))
+    db.commit()
+    flash('Your report was received.', 'success')
+
+    # Redirect back to the page the user came from (likely the post detail page)
+    return redirect(request.referrer or url_for('post_detail', post_id=post_id))
+
+
 @app.route('/comments/<int:comment_id>/delete', methods=['POST'])
 def delete_comment(comment_id):
     """Handles deleting a comment."""
@@ -730,9 +754,11 @@ def admin_dashboard():
     total_posts_pages = (total_posts_count + PAGE_SIZE - 1) // PAGE_SIZE
 
     posts_raw = query_db(f'''
-        SELECT p.id, p.content, p.created_at, u.username, u.created_at as user_created_at
+        SELECT p.id, p.content, p.created_at, u.username, u.created_at as user_created_at, COUNT(DISTINCT r.user_id) AS report_count
         FROM posts p JOIN users u ON p.user_id = u.id
-        ORDER BY p.id DESC -- Order by ID for consistent pagination before risk sort
+                LEFT JOIN reports r ON p.id = r.post_id
+        GROUP BY p.id, p.content, p.created_at, u.username, u.created_at
+        ORDER BY report_count DESC, p.id DESC -- Order by report_count for viewing most reported posts and consistent pagination before risk sort
         LIMIT ? OFFSET ?
     ''', (PAGE_SIZE, posts_offset))
     posts = []

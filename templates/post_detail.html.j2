@@ -74,6 +74,8 @@
           {% endif %}
           <!-- Add Comment Button (triggers modal) -->
           <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addCommentModal-{{ post.id }}">Add Comment</button>
+          <!-- Report Button (triggers modal) -->
+          <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#reportModal-{{ post.id }}">Report</button>
       </div>
 
       {% if comments %}
@@ -121,4 +123,21 @@
   </div>
 </div>
 
+<div class="modal fade" id="reportModal-{{ post.id }}" tabindex="-1" aria-labelledby="reportModalLabel-{{ post.id }}" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reportModalLabel-{{ post.id }}">Report</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/posts/{{ post.id }}/report" method="POST">
+          <div class="mb-3">
+            <label for="report-content-{{ post.id }}" class="form-label">Thank you for reporting this post. We will check the content of this post.</label>
+          <button type="submit" class="btn btn-primary">Close</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

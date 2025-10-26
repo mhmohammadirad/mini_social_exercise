@@ -159,6 +159,7 @@
           Show all comments
         </a>
         <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addCommentModal-{{ entry.post.id }}">Add Comment</button>
+        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#reportModal-{{ entry.post.id }}">Report</button>
       </div>
     </div>
   </div>
@@ -178,6 +179,25 @@
               <textarea class="form-control" id="comment-content-{{ entry.post.id }}" name="content" rows="3" required></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Submit Comment</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="reportModal-{{ entry.post.id }}" tabindex="-1" aria-labelledby="reportModalLabel-{{ entry.post.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="reportModalLabel-{{ entry.post.id }}">Report</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="/posts/{{ entry.post.id }}/report" method="POST">
+            <div class="mb-3">
+              <label for="report-content-{{ entry.post.id }}" class="form-label">Thank you for reporting this post. We will check the content of this post.</label>
+            </div>
+            <button type="submit" class="btn btn-primary">Close</button>
           </form>
         </div>
       </div>
